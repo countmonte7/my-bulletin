@@ -34,18 +34,18 @@ public class UserController {
 			System.out.println("Login Fail-1");
 			return "redirect:/users/loginForm";
 		}
-		if(!password.equals(user.getPassword())) {
+		if(!user.matchPassword(password)) {
 			System.out.println("Login Fail-2");
 			return "redirect:/users/loginForm";
 		}
 		System.out.println("Login Success");
-		session.setAttribute("sessionedUser", user);
+		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("sessionedUser");
+		session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		return "redirect:/";
 	}
 	
@@ -70,21 +70,27 @@ public class UserController {
 	
 	@GetMapping("/{id}/form")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		if(session.getAttribute("sessionedUser")==null) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/loginForm";
 		}
-		User sessionedUser = (User)session.getAttribute("sessionedUser");
+		User sessionedUser = (User)HttpSessionUtils.getUserFromSession(session);
+		if(!sessionedUser.matchId(id)) {
+			throw new IllegalStateException("올바르지 않은 접근입니다. 본인 id만 수정할 수 있습니다.");
+		}
 		model.addAttribute("user", userRepository.findById(sessionedUser.getId()).get());
 		return "/user/updateForm";
 	}
 	
 	@PostMapping("/{id}")
 	public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
-		User sessionedUser = (User)session.getAttribute("sessionedUser");
-		User user = userRepository.findById(id).get();
-		if(!updatedUser.getUserId().equals(sessionedUser.getUserId())) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
+			return "redirect:/users/loginForm";
+		}
+		User sessionedUser = (User)HttpSessionUtils.getUserFromSession(session);
+		if(!sessionedUser.matchId(id)) {
 			return "redirect:/";
 		}
+		User user = userRepository.findById(id).get();
 		user.update(updatedUser);
 		userRepository.save(user);
 		return "redirect:/users";

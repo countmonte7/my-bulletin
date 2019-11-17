@@ -60,6 +60,24 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	//password checking method
+	public boolean matchPassword(String newPassword) {
+		if(newPassword==null) {
+			return false;
+		}
+		
+		return newPassword.equals(password);
+	}
+	
+	public boolean matchId(Long newId) {
+		if(newId==null) {
+			return false;
+		}
+		return newId.equals(id);
+	}
+	
+	
 
 	public void update(User newUser) {
 		this.password = newUser.password;
