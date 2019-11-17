@@ -31,21 +31,21 @@ public class UserController {
 	public String login(String userId, String password, HttpSession session) {
 		User user = userRepository.findByUserId(userId);
 		if(user==null) {
-			System.out.println("Login Fail");
+			System.out.println("Login Fail-1");
 			return "redirect:/users/loginForm";
 		}
 		if(!password.equals(user.getPassword())) {
-			System.out.println("Login Fail");
+			System.out.println("Login Fail-2");
 			return "redirect:/users/loginForm";
 		}
 		System.out.println("Login Success");
-		session.setAttribute("user", user);
+		session.setAttribute("sessionedUser", user);
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("user");
+		session.removeAttribute("sessionedUser");
 		return "redirect:/";
 	}
 	
@@ -68,16 +68,24 @@ public class UserController {
 		return "/user/form";
 	}
 	
-	@GetMapping("{id}/form")
-	public String updateForm(@PathVariable Long id, Model model) {
-		model.addAttribute("user", userRepository.findById(id).get());
+	@GetMapping("/{id}/form")
+	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+		if(session.getAttribute("sessionedUser")==null) {
+			return "redirect:/users/loginForm";
+		}
+		User sessionedUser = (User)session.getAttribute("sessionedUser");
+		model.addAttribute("user", userRepository.findById(sessionedUser.getId()).get());
 		return "/user/updateForm";
 	}
 	
 	@PostMapping("/{id}")
-	public String update(@PathVariable Long id, User newUser) {
+	public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
+		User sessionedUser = (User)session.getAttribute("sessionedUser");
 		User user = userRepository.findById(id).get();
-		user.update(newUser);
+		if(!updatedUser.getUserId().equals(sessionedUser.getUserId())) {
+			return "redirect:/";
+		}
+		user.update(updatedUser);
 		userRepository.save(user);
 		return "redirect:/users";
 	}

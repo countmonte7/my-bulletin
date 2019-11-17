@@ -11,13 +11,23 @@ public class User {
 	@Id
 	@GeneratedValue
 	private Long id;
-	
-	@Column(nullable=false, length=20)
+
+	@Column(nullable = false, length = 20, unique = true)
 	private String userId;
-	
+
 	private String password;
 	private String name;
+
+	@Column(nullable = false, unique = true)
 	private String email;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getUserId() {
 		return userId;
@@ -56,11 +66,10 @@ public class User {
 		this.name = newUser.name;
 		this.email = newUser.email;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
 	}
-
 
 }
