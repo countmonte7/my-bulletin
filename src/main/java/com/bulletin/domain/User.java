@@ -9,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Entity
@@ -16,7 +19,22 @@ public class User {
 
 	@Id
 	@GeneratedValue
+	@JsonProperty
 	private Long id;
+
+	@Column(nullable = false, length = 20, unique = true)
+	@JsonProperty
+	private String userId;
+
+	@JsonIgnore
+	private String password;
+	
+	@JsonProperty
+	private String name;
+
+	@Column(nullable = false, unique = true)
+	@JsonProperty
+	private String email;
 
 	public Long getId() {
 		return id;
@@ -29,17 +47,6 @@ public class User {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-
-	@Column(nullable = false, length = 20, unique = true)
-	private String userId;
-
-	private String password;
-	private String name;
-	
-	@Column(nullable = false, unique = true)
-	private String email;
-	
-	
 
 	public String getPassword() {
 		return password;
@@ -121,7 +128,5 @@ public class User {
 			return false;
 		return true;
 	}
-	
-	
 
 }
