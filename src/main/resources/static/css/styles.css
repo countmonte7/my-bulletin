@@ -151,6 +151,10 @@ h3,h4,h5 {
 .article-util-list .link-answer-article:hover{background-color:#e7eef4}
 .article-util-list .foundicon-thumb-up,.article-util-list .foundicon-thumb-down{position:relative;top:2px}.article-util form{display:inline-block}
 
+a {
+	cursor: pointer;
+}
+
 .qna-list h1 small {
     font-size:.4em
 }
